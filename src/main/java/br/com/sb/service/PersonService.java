@@ -22,4 +22,10 @@ public class PersonService {
     public Person findById(Long id) {
         return personRepository.findOne(id);
     }
+
+    @Transactional
+    public Person save(Person person) {
+        return personRepository.save(person);
+    }
+
 }

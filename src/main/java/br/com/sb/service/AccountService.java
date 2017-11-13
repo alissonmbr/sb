@@ -47,7 +47,7 @@ public class AccountService {
         }
 
         Account parentAccount = null;
-        if (parent) {
+        if (!parent) {
             parentAccount = accountRepository.findOne(parentId);
             if (parentAccount == null) {
                 throw new AccountException("Conta não encontrada!");
@@ -105,10 +105,12 @@ public class AccountService {
         }
 
         if (isAncestral(toAccount, fromAccountId)) {
-            if (value >= fromAccount.getAmount()) {
+            if (value <= fromAccount.getAmount()) {
                 fromAccount.setAmount(fromAccount.getAmount() - value);
                 toAccount.setAmount(toAccount.getAmount() + value);
-                accountTransactionService.create(fromAccount, toAccount, value, null, AccountTransactionType.CHARGE);
+                accountTransactionService.create(fromAccount, toAccount, value, null, AccountTransactionType.TRANSFER);
+            } else {
+                throw new AccountException("Não foi possível realizar transação. Saldo insuficiente!");
             }
         } else {
             throw new AccountException("A conta deve estar na mesma hierarquia!");
@@ -116,7 +118,9 @@ public class AccountService {
     }
 
     private boolean isAncestral(Account parent, long ancestralId) {
-        if (parent.getId().equals(ancestralId)) {
+        if (parent == null) {
+            return false;
+        } else if (parent.getId().equals(ancestralId)) {
             return true;
         } else if (parent.isParent()) {
             return false;

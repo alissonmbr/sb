@@ -2,6 +2,7 @@ package br.com.sb.restcontroller;
 
 import br.com.sb.exception.AccountException;
 import br.com.sb.model.Account;
+import br.com.sb.model.AccountTransaction;
 import br.com.sb.restcontroller.model.*;
 import br.com.sb.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ public class AccountController {
     }
 
     @PostMapping("/transfer")
-    public Result transfer(@ModelAttribute TransferModel transfer) {
+    public Result transfer(@RequestBody TransferModel transfer) {
         try {
             accountService.transfer(transfer.getFromAccountId(), transfer.getToAccountId(), transfer.getValue());
             return new SuccessResult<Boolean>(true, Result.SUCCESS);
@@ -34,10 +35,10 @@ public class AccountController {
     }
 
     @PostMapping("/create")
-    public Result create(@ModelAttribute AccountModel account) {
+    public Result create(@RequestBody AccountModel accountModel) {
         try {
-            accountService.createAccount(account.getName(), account.isParent(), account.getParentId(), account.getPersonId());
-            return new SuccessResult<Boolean>(true, Result.SUCCESS);
+            Account account = accountService.createAccount(accountModel.getName(), accountModel.isParent(), accountModel.getParentId(), accountModel.getPersonId());
+            return new SuccessResult<Account>(account, Result.SUCCESS);
         } catch (AccountException e) {
             return new ErrorResult(e.getMessage(), Result.ERROR);
         }
@@ -59,7 +60,7 @@ public class AccountController {
     }
 
     @PostMapping("/charge/{id}")
-    public Result charge(@PathVariable Long id, @ModelAttribute ChargeModel charge) {
+    public Result charge(@PathVariable Long id, @RequestBody ChargeModel charge) {
         return new SuccessResult<Account>(accountService.charge(id, charge.getValue()), Result.SUCCESS);
     }
 
