@@ -1,5 +1,5 @@
 create database IF NOT EXISTS db_sb;
--- create user 'sbuser'@'localhost' identified by 'sbsecret';
+create user 'sbuser'@'localhost' identified by 'sbsecret';
 grant all on db_sb.* to 'sbuser'@'localhost';
 
 CREATE TABLE IF NOT EXISTS db_sb.person (
