@@ -29,6 +29,29 @@ public class Account {
     @JoinColumn(name = "person_id")
     private Person person;
 
+    @Column(name = "amount")
+    private Double amount;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private AccountStatus accountStatus;
+
+    public AccountStatus getAccountStatus() {
+        return accountStatus;
+    }
+
+    public void setAccountStatus(AccountStatus accountStatus) {
+        this.accountStatus = accountStatus;
+    }
+
+    public Double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(Double amount) {
+        this.amount = amount;
+    }
+
     public Integer getId() {
         return id;
     }

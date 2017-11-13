@@ -21,9 +21,24 @@ CREATE TABLE IF NOT EXISTS db_sb.account (
     `parent` tinyint(1) NOT NULL,
     `parent_id` BIGINT(20) UNSIGNED,
     `person_id` BIGINT(20) UNSIGNED NOT NULL,
+    `amount` DOUBLE NOT NULL DEFAULT 0.0,
+    `status` VARCHAR(20) NOT NULL,
     PRIMARY KEY (`id`),
     CONSTRAINT `fk_parent_id` FOREIGN KEY (`parent_id`) REFERENCES db_sb.account (`id`),
     CONSTRAINT `fk_person_id` FOREIGN KEY (`person_id`) REFERENCES db_sb.person (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+
+CREATE TABLE IF NOT EXISTS db_sb.account_transaction (
+    `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+    `code` VARCHAR(255),
+    `transaction_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `from_id` BIGINT(20) UNSIGNED,
+    `to_id` BIGINT(20) UNSIGNED NOT NULL,
+    `amount` DOUBLE NOT NULL,
+    `type` VARCHAR(20) NOT NULL,
+    PRIMARY KEY (`id`),
+    CONSTRAINT `fk_from_id` FOREIGN KEY (`from_id`) REFERENCES db_sb.account (`id`),
+    CONSTRAINT `fk_to_id` FOREIGN KEY (`to_id`) REFERENCES db_sb.account (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 insert into db_sb.person(type, name, cpf, birth_date) values('I', 'user1', '111.111.111-11', '2000-01-01');
@@ -34,8 +49,8 @@ insert into db_sb.person(type, company_name, cnpj, fantasy_name) values('C', 'co
 insert into db_sb.person(type, company_name, cnpj, fantasy_name) values('C', 'company2', '11.111.111/0001-12', 'fantasy2');
 insert into db_sb.person(type, company_name, cnpj, fantasy_name) values('C', 'company3', '11.111.111/0001-13', 'fantasy3');
 
-insert into db_sb.account(name, parent, parent_id, person_id) values ('account1', 1, null, 1);
-insert into db_sb.account(name, parent, parent_id, person_id) values ('account2', 0, 1, 2);
-insert into db_sb.account(name, parent, parent_id, person_id) values ('account3', 0, 2, 3);
+insert into db_sb.account(name, parent, parent_id, person_id, status) values ('account1', 1, null, 1, 'ACTIVE');
+insert into db_sb.account(name, parent, parent_id, person_id, status) values ('account2', 0, 1, 2, 'ACTIVE');
+insert into db_sb.account(name, parent, parent_id, person_id, status) values ('account3', 0, 2, 3, 'ACTIVE');
 
 

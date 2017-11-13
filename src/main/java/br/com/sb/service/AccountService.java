@@ -1,11 +1,15 @@
 package br.com.sb.service;
 
+import br.com.sb.exception.AccountException;
 import br.com.sb.model.Account;
+import br.com.sb.model.AccountStatus;
+import br.com.sb.model.Person;
 import br.com.sb.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Date;
 
 @Service
 public class AccountService {
@@ -13,27 +17,95 @@ public class AccountService {
     @Autowired
     private AccountRepository accountRepository;
 
+    @Autowired
+    private PersonService personService;
+
     @Transactional
-    public Account createAccount(Account account) {
+    public Iterable<Account> findAll() {
+        return accountRepository.findAll();
+    }
+
+    @Transactional
+    public Account findById(Long id) {
+        return accountRepository.findOne(id);
+    }
+
+    @Transactional
+    public Account saveAccount(Account account) {
         return accountRepository.save(account);
     }
 
     @Transactional
-    public void deleteAccount(Long id) {
-        accountRepository.delete(id);
+    public Account createAccount(String name, boolean parent, Long parentId, Long personId) throws AccountException {
+        Person person = personService.findById(personId);
+        if (person == null) {
+            throw new AccountException("Pessoa não encontrada!");
+        }
+
+        Account parentAccount = null;
+        if (parent) {
+            parentAccount = accountRepository.findOne(parentId);
+            if (parentAccount == null) {
+                throw new AccountException("Conta não encontrada!");
+            }
+        }
+
+        Account account = new Account();
+        account.setName(name);
+        account.setParent(parent);
+        account.setParentAccount(parentAccount);
+        account.setPerson(person);
+        account.setCreationDate(new Date());
+        account.setAmount(0.0);
+        account.setAccountStatus(AccountStatus.ACTIVE);
+        return saveAccount(account);
     }
 
-    /*
-    Toda Conta Filial pode efetuar transferências desde que a conta que receberá a transferência esteja debaixo da mesma árvore e não seja uma conta Matriz.
-    A Conta Matriz não pode receber transferências de outras contas, apenas Aportes que devem possuir um código alfanumérico único.
-    Toda transação pode ser estornada (no caso de um estorno de um Aporte é necessário informar o código alfanumérico para que a transação possa ser estornada).
-    Apenas as Contas Ativas podem receber Cargas ou Transferências
-     */
     @Transactional
-    public void transfer(Long fromAccountId, Long toAccountId, Double value) {
-        Account fromAccount = accountRepository.findOne(fromAccountId);
-        Account toAccount = accountRepository.findOne(fromAccountId);
+    public Account activateAccount(Long id) {
+        Account account = findById(id);
+        account.setAccountStatus(AccountStatus.ACTIVE);
+        return saveAccount(account);
+    }
 
+    @Transactional
+    public Account blockAccount(Long id) {
+        Account account = findById(id);
+        account.setAccountStatus(AccountStatus.BLOCKED);
+        return saveAccount(account);
+    }
+
+    @Transactional
+    public Account cancelAccount(Long id) {
+        Account account = findById(id);
+        account.setAccountStatus(AccountStatus.CANCELED);
+        return saveAccount(account);
+    }
+
+    @Transactional
+    public Account charge(Long id, Double value) {
+        Account account = findById(id);
+        account.setAmount(account.getAmount() + value);
+        return saveAccount(account);
+    }
+
+    @Transactional
+    public void transfer(Long fromAccountId, Long toAccountId, Double value) throws AccountException {
+        Account fromAccount = accountRepository.findOne(fromAccountId);
+        Account toAccount = accountRepository.findOne(toAccountId);
+
+        if (!fromAccount.getAccountStatus().equals(AccountStatus.ACTIVE) || !toAccount.getAccountStatus().equals(AccountStatus.ACTIVE)) {
+            throw new AccountException("Conta deve estar ativa!");
+        }
+
+        if (isAncestral(toAccount, fromAccountId)) {
+            if (value >= fromAccount.getAmount()) {
+                fromAccount.setAmount(fromAccount.getAmount() - value);
+                toAccount.setAmount(toAccount.getAmount() + value);
+            }
+        } else {
+            throw new AccountException("A conta deve estar na mesma hierarquia!");
+        }
     }
 
     private boolean isAncestral(Account parent, long ancestralId) {

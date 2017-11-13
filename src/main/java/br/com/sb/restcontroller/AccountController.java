@@ -1,40 +1,66 @@
 package br.com.sb.restcontroller;
 
-import br.com.sb.repository.AccountRepository;
-import br.com.sb.repository.CompanyPersonRepository;
-import br.com.sb.repository.IndividualPersonRepository;
-import br.com.sb.repository.PersonRepository;
+import br.com.sb.exception.AccountException;
+import br.com.sb.model.Account;
+import br.com.sb.restcontroller.model.*;
+import br.com.sb.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 
 @RestController
+@RequestMapping("/account")
 public class AccountController {
 
     @Autowired
-    private CompanyPersonRepository companyPersonRepository;
-
-    @Autowired
-    private IndividualPersonRepository individualPersonRepository;
-
-    @Autowired
-    private PersonRepository personRepository;
-
-    @Autowired
-    private AccountRepository accountRepository;
-
+    private AccountService accountService;
 
     @RequestMapping("/greeting")
     public HashMap<String, Object> greeting(@RequestParam(value = "name", defaultValue = "World") String name) {
         HashMap<String, Object> test = new HashMap<>();
-        test.put("person", personRepository.findAll());
-        test.put("company", companyPersonRepository.findAll());
-        test.put("individual", individualPersonRepository.findAll());
-        test.put("account", accountRepository.findAll());
+        test.put("account", accountService.findAll());
         return test;
+    }
+
+    @PostMapping("/transfer")
+    public Result transfer(@ModelAttribute TransferModel transfer) {
+        try {
+            accountService.transfer(transfer.getFromAccountId(), transfer.getToAccountId(), transfer.getValue());
+            return new SuccessResult<Boolean>(true, Result.SUCCESS);
+        } catch (AccountException e) {
+            return new ErrorResult(e.getMessage(), Result.ERROR);
+        }
+    }
+
+    @PostMapping("/create")
+    public Result create(@ModelAttribute AccountModel account) {
+        try {
+            accountService.createAccount(account.getName(), account.isParent(), account.getParentId(), account.getPersonId());
+            return new SuccessResult<Boolean>(true, Result.SUCCESS);
+        } catch (AccountException e) {
+            return new ErrorResult(e.getMessage(), Result.ERROR);
+        }
+    }
+
+    @PostMapping("/activate/{id}")
+    public Result activate(@PathVariable Long id) {
+        return new SuccessResult<Account>(accountService.activateAccount(id), Result.SUCCESS);
+    }
+
+    @PostMapping("/block/{id}")
+    public Result block(@PathVariable Long id) {
+        return new SuccessResult<Account>(accountService.blockAccount(id), Result.SUCCESS);
+    }
+
+    @PostMapping("/cancel/{id}")
+    public Result cancel(@PathVariable Long id) {
+        return new SuccessResult<Account>(accountService.cancelAccount(id), Result.SUCCESS);
+    }
+
+    @PostMapping("/charge/{id}")
+    public Result charge(@PathVariable Long id, @ModelAttribute ChargeModel charge) {
+        return new SuccessResult<Account>(accountService.charge(id, charge.getValue()), Result.SUCCESS);
     }
 
 }
