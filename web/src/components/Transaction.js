@@ -12,16 +12,18 @@ import { InputLabel } from 'material-ui/Input';
 
 import '../styles/Person.scss';
 
-class Charge extends Component {
+class Transaction extends Component {
 
     constructor() {
         super();
         this.state = {
-            value: '',
-            accountId: undefined,
+            value: undefined,
+            fromAccountId: undefined,
+            toAccountId: undefined,
             snackBarOpen: false,
             snackMessage: '',
-            accounts: []
+            accounts: [],
+            toAccounts: []
         }
     }
 
@@ -31,8 +33,8 @@ class Charge extends Component {
         this.setState(change);
     }
 
-    charge = () => {
-        if (!this.state.value || !this.state.accountId) {
+    transfer = () => {
+        if (!this.state.value || !this.state.fromAccountId || !this.state.toAccountId) {
             this.setState({
                 snackBarOpen: true,
                 snackMessage: "Todos os campos são obrigatórios!"
@@ -41,17 +43,20 @@ class Charge extends Component {
             return;
         }
 
-        let charge = {
-            value: this.state.value
+        let transaction = {
+            value: this.state.value,
+            fromAccountId: this.state.fromAccountId,
+            toAccountId: this.state.toAccountId
         };
 
-        accountService.charge(this.state.accountId, charge)
+        accountService.transfer(transaction)
             .then((data) => {
                 this.setState({
-                    value: '',
-                    accountId: undefined,
+                    value: undefined,
+                    fromAccountId: undefined,
+                    toAccountId: undefined,
                     snackBarOpen: true,
-                    snackMessage: 'Cadastro realizado com sucesso!'
+                    snackMessage: 'Transação realizada com sucesso!'
                 });
                 console.log(data);
             })
@@ -94,8 +99,17 @@ class Charge extends Component {
                             </Grid>
                             <Grid item md={4} sm={12} xs={12}>
                                 <FormControl fullWidth>
-                                    <InputLabel htmlFor="age-simple">Conta</InputLabel>
-                                    <Select native name="accountId" value={this.state.accountId} onChange={this.handleChange.bind(this)}>
+                                    <InputLabel htmlFor="age-simple">Conta de Origem</InputLabel>
+                                    <Select native name="fromAccountId" value={this.state.fromAccountId} onChange={this.handleChange.bind(this)}>
+                                        <option value="" />
+                                        {accounts}
+                                  </Select>
+                              </FormControl>
+                            </Grid>
+                            <Grid item md={4} sm={12} xs={12}>
+                                <FormControl fullWidth>
+                                    <InputLabel htmlFor="age-simple">Conta de Destino</InputLabel>
+                                    <Select native name="toAccountId" value={this.state.toAccountId} onChange={this.handleChange.bind(this)}>
                                         <option value="" />
                                         {accounts}
                                   </Select>
@@ -105,7 +119,7 @@ class Charge extends Component {
                     </Grid>
                 </Grid>
                 <br/>
-                <Button raised onClick={this.charge}>Cadastrar</Button>
+                <Button raised onClick={this.transfer}>Cadastrar</Button>
                 <Snackbar
                   open={this.state.snackBarOpen}
                   transition={Slide}
@@ -119,8 +133,8 @@ class Charge extends Component {
     }
 }
 
-Charge.propTypes = {
+Transaction.propTypes = {
 
 };
 
-export default Charge;
+export default Transaction;

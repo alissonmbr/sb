@@ -8,6 +8,7 @@ import AccountBalanceIcon from 'material-ui-icons/AccountBalance';
 import Person from '../components/Person';
 import Account from '../components/Account';
 import Charge from '../components/Charge';
+import Transaction from '../components/Transaction';
 
 import '../styles/App.scss';
 
@@ -48,11 +49,13 @@ class App extends Component {
             <Tab icon={<PersonAddIcon />} label="Adicionar Pessoa" />
             <Tab icon={<AccountBalanceIcon />} label="Adicionar Conta" />
             <Tab icon={<AccountBalanceIcon />} label="Realizar Carga" />
+            <Tab icon={<AccountBalanceIcon />} label="Realizar Transferência" />
           </Tabs>
         </AppBar>
         {value === 0 && <TabContainer><Person /></TabContainer>}
         {value === 1 && <TabContainer><Account /></TabContainer>}
         {value === 2 && <TabContainer><Charge /></TabContainer>}
+        {value === 3 && <TabContainer><Transaction /></TabContainer>}
 
       </div>
     );

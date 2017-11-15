@@ -43,6 +43,7 @@ class Account extends Component {
                 snackMessage: "Todos os campos são obrigatórios!"
             });
             setTimeout(() => this.setState({snackBarOpen: false}), 10000);
+            return;
         }
 
         let account = {

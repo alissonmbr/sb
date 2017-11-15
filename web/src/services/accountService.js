@@ -1,7 +1,8 @@
 export const accountService = {
     create,
     findAll,
-    charge
+    charge,
+    transfer
 };
 
 function create(person) {
@@ -14,11 +15,16 @@ function create(person) {
         body: JSON.stringify(person)
     }).then((response) => {
         if (response.status === 400) {
-            throw Error(response.message);
+            return response.json();
         } else if (!response.ok) {
             throw Error('Ocorreu um erro interno! Favor tentar novamente!');
         }
         return response.json()
+    }).then(data => {
+        if (!!data.status && data.status === "error") {
+            throw Error(data.message);
+        }
+        return data;
     });
 }
 
@@ -32,11 +38,39 @@ function charge(accountId, charge) {
         body: JSON.stringify(charge)
     }).then((response) => {
         if (response.status === 400) {
-            throw Error(response.message);
+            return response.json();
         } else if (!response.ok) {
             throw Error('Ocorreu um erro interno! Favor tentar novamente!');
         }
         return response.json()
+    }).then(data => {
+        if (!!data.status && data.status === "error") {
+            throw Error(data.message);
+        }
+        return data;
+    });
+}
+
+function transfer(transaction) {
+    return fetch('/api/account/transfer', {
+        method: 'POST',
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(transaction)
+    }).then((response) => {
+        if (response.status === 400) {
+            return response.json();
+        } else if (!response.ok) {
+            throw Error('Ocorreu um erro interno! Favor tentar novamente!');
+        }
+        return response.json()
+    }).then(data => {
+        if (!!data.status && data.status === "error") {
+            throw Error(data.message);
+        }
+        return data;
     });
 }
 
@@ -48,9 +82,16 @@ function findAll() {
             'Content-Type': 'application/json'
         }
     }).then((response) => {
-        if (!response.ok) {
+        if (response.status === 400) {
+            return response.json();
+        } else if (!response.ok) {
             throw Error('Ocorreu um erro interno! Favor tentar novamente!');
         }
         return response.json()
+    }).then(data => {
+        if (!!data.status && data.status === "error") {
+            throw Error(data.message);
+        }
+        return data;
     });
 }
