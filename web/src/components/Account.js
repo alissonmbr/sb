@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import TextField from 'material-ui/TextField';
 import Radio, { RadioGroup } from 'material-ui/Radio';
-import { FormLabel, FormControl, FormControlLabel, FormHelperText } from 'material-ui/Form';
+import { FormLabel, FormControl, FormControlLabel } from 'material-ui/Form';
 import Grid from 'material-ui/Grid';
 import Button from 'material-ui/Button';
 import {personService} from '../services/personService';
@@ -10,7 +10,7 @@ import {accountService} from '../services/accountService';
 import Snackbar from 'material-ui/Snackbar';
 import Slide from 'material-ui/transitions/Slide';
 import Select from 'material-ui/Select';
-import Input, { InputLabel } from 'material-ui/Input';
+import { InputLabel } from 'material-ui/Input';
 
 import '../styles/Person.scss';
 
@@ -37,7 +37,7 @@ class Account extends Component {
     }
 
     createAccount = () => {
-        if (!this.state.parent || !this.state.personId || this.state.parente === 'true' && !this.state.parentId) {
+        if (!this.state.parent || !this.state.personId || (this.state.parent === 'true' && !this.state.parentId)) {
             this.setState({
                 snackBarOpen: true,
                 snackMessage: "Todos os campos são obrigatórios!"

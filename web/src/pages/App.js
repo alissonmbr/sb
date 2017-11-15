@@ -1,19 +1,13 @@
 import React, {Component} from 'react';
-import Button from 'material-ui/Button';
 import PropTypes from 'prop-types';
 import {withStyles} from 'material-ui/styles';
 import AppBar from 'material-ui/AppBar';
 import Tabs, {Tab} from 'material-ui/Tabs';
-import PhoneIcon from 'material-ui-icons/Phone';
-import FavoriteIcon from 'material-ui-icons/Favorite';
 import PersonAddIcon from 'material-ui-icons/PersonAdd';
 import AccountBalanceIcon from 'material-ui-icons/AccountBalance';
-import HelpIcon from 'material-ui-icons/Help';
-import ShoppingBasket from 'material-ui-icons/ShoppingBasket';
-import ThumbDown from 'material-ui-icons/ThumbDown';
-import ThumbUp from 'material-ui-icons/ThumbUp';
 import Person from '../components/Person';
 import Account from '../components/Account';
+import Charge from '../components/Charge';
 
 import '../styles/App.scss';
 
@@ -58,7 +52,7 @@ class App extends Component {
         </AppBar>
         {value === 0 && <TabContainer><Person /></TabContainer>}
         {value === 1 && <TabContainer><Account /></TabContainer>}
-        {value === 1 && <TabContainer><Account /></TabContainer>}
+        {value === 2 && <TabContainer><Charge /></TabContainer>}
 
       </div>
     );
