@@ -6,43 +6,16 @@ import AppBar from 'material-ui/AppBar';
 import Tabs, {Tab} from 'material-ui/Tabs';
 import PhoneIcon from 'material-ui-icons/Phone';
 import FavoriteIcon from 'material-ui-icons/Favorite';
-import PersonPinIcon from 'material-ui-icons/PersonPin';
+import PersonAddIcon from 'material-ui-icons/PersonAdd';
+import AccountBalanceIcon from 'material-ui-icons/AccountBalance';
 import HelpIcon from 'material-ui-icons/Help';
 import ShoppingBasket from 'material-ui-icons/ShoppingBasket';
 import ThumbDown from 'material-ui-icons/ThumbDown';
 import ThumbUp from 'material-ui-icons/ThumbUp';
+import Person from '../components/Person';
+import Account from '../components/Account';
 
 import '../styles/App.scss';
-
-// class App extends Component {
-//     render() {
-//         return (
-//             <div>
-//                 <Button raised color="primary">
-//                     Hello World
-//                 </Button>
-//             </div>
-//         );
-//     }
-// }
-//
-// export default App;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 function TabContainer(props) {
   return <div style={{ padding: 8 * 3 }}>{props.children}</div>;
@@ -78,22 +51,13 @@ class App extends Component {
       <div className={classes.root}>
         <AppBar position="static">
           <Tabs value={value} onChange={this.handleChange} scrollable scrollButtons="off">
-            <Tab icon={<PhoneIcon />} />
-            <Tab icon={<FavoriteIcon />} />
-            <Tab icon={<PersonPinIcon />} />
-            <Tab icon={<HelpIcon />} />
-            <Tab icon={<ShoppingBasket />} />
-            <Tab icon={<ThumbDown />} />
-            <Tab icon={<ThumbUp />} />
+            <Tab icon={<PersonAddIcon />} label="Adicionar Pessoa" />
+            <Tab icon={<AccountBalanceIcon />} label="Adicionar Conta" />
           </Tabs>
         </AppBar>
-        {value === 0 && <TabContainer>Item One</TabContainer>}
+        {value === 0 && <TabContainer><Person /></TabContainer>}
         {value === 1 && <TabContainer>Item Two</TabContainer>}
-        {value === 2 && <TabContainer>Item Three</TabContainer>}
-        {value === 3 && <TabContainer>Item Four</TabContainer>}
-        {value === 4 && <TabContainer>Item Five</TabContainer>}
-        {value === 5 && <TabContainer>Item Six</TabContainer>}
-        {value === 6 && <TabContainer>Item Seven</TabContainer>}
+
       </div>
     );
   }

@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 @Entity
 @DiscriminatorValue(value = "C")
 public class CompanyPerson extends Person {
+    public static final String TYPE = "C";
 
     @Column(name = "cnpj")
     private String cnpj;

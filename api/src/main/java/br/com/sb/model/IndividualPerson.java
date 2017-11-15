@@ -8,6 +8,7 @@ import java.util.Date;
 @Entity
 @DiscriminatorValue(value = "I")
 public class IndividualPerson extends Person {
+    public static final String TYPE = "I";
 
     @Column(name = "name")
     private String name;
