@@ -1,10 +1,10 @@
-export const personService = {
+export const accountService = {
     create,
     findAll
 };
 
 function create(person) {
-    return fetch('/api/person/create', {
+    return fetch('/api/account/create', {
         method: 'POST',
         headers: {
             'Accept': 'application/json',
@@ -22,7 +22,7 @@ function create(person) {
 }
 
 function findAll() {
-    return fetch('/api/person/all', {
+    return fetch('/api/account/all', {
         method: 'GET',
         headers: {
             'Accept': 'application/json',

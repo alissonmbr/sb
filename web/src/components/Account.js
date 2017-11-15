@@ -6,8 +6,11 @@ import { FormLabel, FormControl, FormControlLabel, FormHelperText } from 'materi
 import Grid from 'material-ui/Grid';
 import Button from 'material-ui/Button';
 import {personService} from '../services/personService';
+import {accountService} from '../services/accountService';
 import Snackbar from 'material-ui/Snackbar';
 import Slide from 'material-ui/transitions/Slide';
+import Select from 'material-ui/Select';
+import Input, { InputLabel } from 'material-ui/Input';
 
 import '../styles/Person.scss';
 
@@ -16,15 +19,14 @@ class Account extends Component {
     constructor() {
         super();
         this.state = {
-            personType: '',
             name: '',
-            cpf: '',
-            birthDate: '',
-            companyName: '',
-            fantasyName: '',
-            cnpj: '',
+            personId: undefined,
+            parentId: undefined,
+            parent: '',
             snackBarOpen: false,
-            snackMessage: 'sdf'
+            snackMessage: '',
+            persons: [],
+            accounts: []
         }
     }
 
@@ -34,30 +36,30 @@ class Account extends Component {
         this.setState(change);
     }
 
-    createPerson = () => {
-        let person = {
-            personType: this.state.personType
-        };
-
-        if (this.state.personType === 'I' ) {
-            person.name = this.state.name;
-            person.cpf = this.state.cpf
-            person.birthDate = this.state.birthDate;
-        } else {
-            person.companyName = this.state.companyName;
-            person.cnpj = this.state.cnpj;
-            person.fantasyName = this.state.fantasyName;
+    createAccount = () => {
+        if (!this.state.parent || !this.state.personId || this.state.parente === 'true' && !this.state.parentId) {
+            this.setState({
+                snackBarOpen: true,
+                snackMessage: "Todos os campos são obrigatórios!"
+            });
+            setTimeout(() => this.setState({snackBarOpen: false}), 10000);
         }
 
-        personService.create(person)
+        let account = {
+            parent: this.state.parent,
+            personId: this.state.personId,
+            parentId: this.state.parentId,
+            name: this.state.name
+        };
+
+
+        accountService.create(account)
             .then((data) => {
                 this.setState({
                     name: '',
-                    cpf: '',
-                    birthDate: '',
-                    companyName: '',
-                    fantasyName: '',
-                    cnpj: '',
+                    personId: undefined,
+                    parentId: undefined,
+                    parent: '',
                     snackBarOpen: true,
                     snackMessage: 'Cadastro realizado com sucesso!'
                 });
@@ -72,49 +74,89 @@ class Account extends Component {
             }).then(() => {setTimeout(() => this.setState({snackBarOpen: false}), 10000)});
     }
 
-    render() {
+    findPerson() {
+        personService.findAll()
+            .then((data) => {
+                let persons = data.map((person) => {return {
+                    id: person.id,
+                    type: person.type,
+                    name: person.name || person.fantasyName
+                }});
 
+                this.setState({persons});
+            })
+            .catch((error) => {
+                this.setState({
+                    snackBarOpen: true,
+                    snackMessage: error.message
+                });
+                console.log(error);
+            }).then(() => {setTimeout(() => this.setState({snackBarOpen: false}), 10000)});
+    }
+
+    findAccounts() {
+        accountService.findAll()
+            .then((data) => {
+                this.setState({accounts: data});
+            })
+            .catch((error) => {
+                this.setState({
+                    snackBarOpen: true,
+                    snackMessage: error.message
+                });
+                console.log(error);
+            }).then(() => {setTimeout(() => this.setState({snackBarOpen: false}), 10000)});
+    }
+
+    componentDidMount() {
+        this.findPerson();
+        this.findAccounts();
+    }
+
+    render() {
+        let persons = this.state.persons.map((person, index) => <option key={'person' + person.id} value={person.id}>{person.name}</option>);
+        let accounts = this.state.accounts.map((account, index) => <option key={'account' + account.id} value={account.id}>{account.name}</option>);
         return (
             <Grid container spacing={24}>
                 <Grid item md={2} sm={12}>
                     <FormControl component="fieldset" required>
                         <FormLabel component="legend">Tipo</FormLabel>
-                        <RadioGroup aria-label="type" name="personType" value={this.state.personType} onChange={this.handleChange.bind(this)}>
-                            <FormControlLabel value="I" control={<Radio />} label="Pessoa Física" />
-                            <FormControlLabel value="C" control={<Radio />} label="Pessoa Jurídica" />
+                        <RadioGroup aria-label="type" name="parent" value={this.state.parent} onChange={this.handleChange.bind(this)}>
+                            <FormControlLabel value="true" control={<Radio />} label="Conta Matriz" />
+                            <FormControlLabel value="false" control={<Radio />} label="Conta Filial" />
                         </RadioGroup>
                     </FormControl>
                 </Grid>
 
 
                 <Grid item md={10} sm={12} xs={12}>
-                    <Grid container spacing={24} style={this.state.personType === 'I' ? {} : { display: 'none' }}>
+                    <Grid container spacing={24}>
                         <Grid item md={4} sm={12} xs={12}>
                             <TextField autoFocus margin="dense" label="Nome" type="text" fullWidth name="name" value={this.state.name} onChange={this.handleChange.bind(this)}/>
                         </Grid>
                         <Grid item md={4} sm={12} xs={12}>
-                            <TextField autoFocus margin="dense" label="CPF" type="text" fullWidth name="cpf" value={this.state.cpf} onChange={this.handleChange.bind(this)}/>
+                            <FormControl fullWidth>
+                                <InputLabel htmlFor="age-simple">Pessoa</InputLabel>
+                                <Select native name="personId" value={this.state.personId} onChange={this.handleChange.bind(this)}>
+                                    <option value="" />
+                                    {persons}
+                              </Select>
+                          </FormControl>
                         </Grid>
-                        <Grid item md={4} sm={12} xs={12}>
-                            <TextField id="date" label="Birthday" type="date" InputLabelProps={{shrink: true,}} fullWidth name="birthDate" value={this.state.birthDate} onChange={this.handleChange.bind(this)}/>
-                        </Grid>
-                    </Grid>
-
-                    <Grid container spacing={24} style={this.state.personType === 'C' ? {} : { display: 'none' }}>
-                        <Grid item md={4} sm={12} xs={12}>
-                            <TextField autoFocus margin="dense" label="Razão Social" type="text" fullWidth name="companyName" value={this.state.companyName} onChange={this.handleChange.bind(this)}/>
-                        </Grid>
-                        <Grid item md={4} sm={12} xs={12}>
-                            <TextField autoFocus margin="dense" label="Nome Fantasia" type="text" fullWidth name="fantasyName" value={this.state.fantasyName} onChange={this.handleChange.bind(this)}/>
-                        </Grid>
-                        <Grid item md={4} sm={12} xs={12}>
-                            <TextField autoFocus margin="dense" label="CNPJ" type="text" fullWidth name="cnpj" value={this.state.cnpj} onChange={this.handleChange.bind(this)}/>
+                        <Grid item md={4} sm={12} xs={12} style={this.state.parent === 'false' ? {} : { display: 'none' }}>
+                            <FormControl fullWidth>
+                                <InputLabel htmlFor="age-simple">Conta Pai</InputLabel>
+                                <Select native name="parentId" value={this.state.parentId} onChange={this.handleChange.bind(this)}>
+                                    <option value="" />
+                                    {accounts}
+                              </Select>
+                          </FormControl>
                         </Grid>
                     </Grid>
                 </Grid>
 
                 <br/>
-                <Button raised style={this.state.personType !== '' ? {} : { display: 'none' }} onClick={this.createPerson}>Cadastrar</Button>
+                <Button raised onClick={this.createAccount}>Cadastrar</Button>
                 <Snackbar
                   open={this.state.snackBarOpen}
                   transition={Slide}

@@ -6,6 +6,8 @@ import br.com.sb.model.AccountTransaction;
 import br.com.sb.restcontroller.model.*;
 import br.com.sb.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -17,51 +19,49 @@ public class AccountController {
     @Autowired
     private AccountService accountService;
 
-    @RequestMapping("/greeting")
-    public HashMap<String, Object> greeting(@RequestParam(value = "name", defaultValue = "World") String name) {
-        HashMap<String, Object> test = new HashMap<>();
-        test.put("account", accountService.findAll());
-        return test;
-    }
-
     @PostMapping("/transfer")
-    public Result transfer(@RequestBody TransferModel transfer) {
+    public ResponseEntity transfer(@RequestBody TransferModel transfer) {
         try {
             accountService.transfer(transfer.getFromAccountId(), transfer.getToAccountId(), transfer.getValue());
-            return new SuccessResult<Boolean>(true, Result.SUCCESS);
+            return ResponseEntity.ok(true);
         } catch (AccountException e) {
-            return new ErrorResult(e.getMessage(), Result.ERROR);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResult(e.getMessage(), Result.ERROR));
         }
     }
 
     @PostMapping("/create")
-    public Result create(@RequestBody AccountModel accountModel) {
+    public ResponseEntity create(@RequestBody AccountModel accountModel) {
         try {
             Account account = accountService.createAccount(accountModel.getName(), accountModel.isParent(), accountModel.getParentId(), accountModel.getPersonId());
-            return new SuccessResult<Account>(account, Result.SUCCESS);
+            return ResponseEntity.ok(account);
         } catch (AccountException e) {
-            return new ErrorResult(e.getMessage(), Result.ERROR);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResult(e.getMessage(), Result.ERROR));
         }
     }
 
     @PostMapping("/activate/{id}")
-    public Result activate(@PathVariable Long id) {
-        return new SuccessResult<Account>(accountService.activateAccount(id), Result.SUCCESS);
+    public ResponseEntity activate(@PathVariable Long id) {
+        return ResponseEntity.ok(accountService.activateAccount(id));
     }
 
     @PostMapping("/block/{id}")
-    public Result block(@PathVariable Long id) {
-        return new SuccessResult<Account>(accountService.blockAccount(id), Result.SUCCESS);
+    public ResponseEntity block(@PathVariable Long id) {
+        return ResponseEntity.ok(accountService.blockAccount(id));
     }
 
     @PostMapping("/cancel/{id}")
-    public Result cancel(@PathVariable Long id) {
-        return new SuccessResult<Account>(accountService.cancelAccount(id), Result.SUCCESS);
+    public ResponseEntity cancel(@PathVariable Long id) {
+        return ResponseEntity.ok(accountService.cancelAccount(id));
     }
 
     @PostMapping("/charge/{id}")
-    public Result charge(@PathVariable Long id, @RequestBody ChargeModel charge) {
-        return new SuccessResult<Account>(accountService.charge(id, charge.getValue()), Result.SUCCESS);
+    public ResponseEntity charge(@PathVariable Long id, @RequestBody ChargeModel charge) {
+        return ResponseEntity.ok(accountService.charge(id, charge.getValue()));
+    }
+
+    @GetMapping("/all")
+    public ResponseEntity findAll() {
+        return ResponseEntity.ok(accountService.findAll());
     }
 
 }

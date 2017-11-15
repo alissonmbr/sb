@@ -53,10 +53,12 @@ class App extends Component {
           <Tabs value={value} onChange={this.handleChange} scrollable scrollButtons="off">
             <Tab icon={<PersonAddIcon />} label="Adicionar Pessoa" />
             <Tab icon={<AccountBalanceIcon />} label="Adicionar Conta" />
+            <Tab icon={<AccountBalanceIcon />} label="Realizar Carga" />
           </Tabs>
         </AppBar>
         {value === 0 && <TabContainer><Person /></TabContainer>}
-        {value === 1 && <TabContainer>Item Two</TabContainer>}
+        {value === 1 && <TabContainer><Account /></TabContainer>}
+        {value === 1 && <TabContainer><Account /></TabContainer>}
 
       </div>
     );
