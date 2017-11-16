@@ -2,15 +2,12 @@ package br.com.sb.restcontroller;
 
 import br.com.sb.exception.AccountException;
 import br.com.sb.model.Account;
-import br.com.sb.model.AccountTransaction;
 import br.com.sb.restcontroller.model.*;
 import br.com.sb.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
 
 @RestController
 @RequestMapping("/account")
@@ -23,6 +20,16 @@ public class AccountController {
     public ResponseEntity transfer(@RequestBody TransferModel transfer) {
         try {
             accountService.transfer(transfer.getFromAccountId(), transfer.getToAccountId(), transfer.getValue());
+            return ResponseEntity.ok(true);
+        } catch (AccountException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResult(e.getMessage(), Result.ERROR));
+        }
+    }
+
+    @PostMapping("/reverse-transfer/{id}")
+    public ResponseEntity reverseTransfer(@PathVariable Long id) {
+        try {
+            accountService.reverseTransfer(id);
             return ResponseEntity.ok(true);
         } catch (AccountException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResult(e.getMessage(), Result.ERROR));

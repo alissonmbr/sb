@@ -1,10 +1,7 @@
 package br.com.sb.service;
 
 import br.com.sb.exception.AccountException;
-import br.com.sb.model.Account;
-import br.com.sb.model.AccountStatus;
-import br.com.sb.model.AccountTransactionType;
-import br.com.sb.model.Person;
+import br.com.sb.model.*;
 import br.com.sb.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -93,6 +90,35 @@ public class AccountService {
         account.setAmount(account.getAmount() + value);
         accountTransactionService.create(null, account, value, null, AccountTransactionType.CHARGE);
         return saveAccount(account);
+    }
+
+    @Transactional
+    public void reverseTransfer(Long accountTransactionId) throws AccountException {
+        AccountTransaction accountTransaction = accountTransactionService.findById(accountTransactionId);
+        if (accountTransaction.getFromAccount() == null) {
+            if (accountTransaction.getToAccount().getAmount() < accountTransaction.getAmount()) {
+                throw new AccountException("Não foi possível realizar estorno. Saldo insuficiente!");
+            }
+
+            Account accountFrom = accountTransaction.getToAccount();
+            accountFrom.setAmount(accountFrom.getAmount() - accountTransaction.getAmount());
+            saveAccount(accountFrom);
+            accountTransactionService.create(null, accountFrom, accountTransaction.getAmount(), null, AccountTransactionType.CHARGE_REVERSE);
+        } else {
+            if (accountTransaction.getToAccount().getAmount() < accountTransaction.getAmount()) {
+                throw new AccountException("Não foi possível realizar estorno. Saldo insuficiente!");
+            }
+
+            Account accountTo = accountTransaction.getFromAccount();
+            accountTo.setAmount(accountTo.getAmount() + accountTransaction.getAmount());
+
+            Account accountFrom = accountTransaction.getToAccount();
+            accountFrom.setAmount(accountFrom.getAmount() - accountTransaction.getAmount());
+
+            saveAccount(accountTo);
+            saveAccount(accountFrom);
+            accountTransactionService.create(accountFrom, accountTo, accountTransaction.getAmount(), null, AccountTransactionType.TRANSFER_REVERSE);
+        }
     }
 
     @Transactional

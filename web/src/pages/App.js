@@ -9,6 +9,7 @@ import Person from '../components/Person';
 import Account from '../components/Account';
 import Charge from '../components/Charge';
 import Transaction from '../components/Transaction';
+import TransactionHistory from '../components/TransactionHistory';
 
 import '../styles/App.scss';
 
@@ -50,12 +51,14 @@ class App extends Component {
             <Tab icon={<AccountBalanceIcon />} label="Adicionar Conta" />
             <Tab icon={<AccountBalanceIcon />} label="Realizar Carga" />
             <Tab icon={<AccountBalanceIcon />} label="Realizar Transferência" />
+            <Tab icon={<AccountBalanceIcon />} label="Histórico de Transação" />
           </Tabs>
         </AppBar>
         {value === 0 && <TabContainer><Person /></TabContainer>}
         {value === 1 && <TabContainer><Account /></TabContainer>}
         {value === 2 && <TabContainer><Charge /></TabContainer>}
         {value === 3 && <TabContainer><Transaction /></TabContainer>}
+        {value === 4 && <TabContainer><TransactionHistory /></TabContainer>}
 
       </div>
     );
