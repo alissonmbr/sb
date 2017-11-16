@@ -41,4 +41,8 @@ public class CompanyPerson extends Person {
     public void setFantasyName(String fantasyName) {
         this.fantasyName = fantasyName;
     }
+
+    public static String getTYPE() {
+        return TYPE;
+    }
 }

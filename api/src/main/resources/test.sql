@@ -1,6 +1,6 @@
-create database IF NOT EXISTS db_sb;
-create user 'sbuser'@'localhost' identified by 'sbsecret';
-grant all on db_sb.* to 'sbuser'@'localhost';
+create SCHEMA db_sb;
+-- create user 'sbuser'@'localhost' identified by 'sbsecret';
+-- grant all on db_sb.* to 'sbuser'@'localhost';
 
 CREATE TABLE IF NOT EXISTS db_sb.person (
     `id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -41,16 +41,16 @@ CREATE TABLE IF NOT EXISTS db_sb.account_transaction (
     CONSTRAINT `fk_to_id` FOREIGN KEY (`to_id`) REFERENCES db_sb.account (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
--- insert into db_sb.person(type, name, cpf, birth_date) values('I', 'user1', '111.111.111-11', '2000-01-01');
--- insert into db_sb.person(type, name, cpf, birth_date) values('I', 'user2', '111.111.111-12', '2000-01-01');
--- insert into db_sb.person(type, name, cpf, birth_date) values('I', 'user3', '111.111.111-13', '2000-01-01');
---
--- insert into db_sb.person(type, company_name, cnpj, fantasy_name) values('C', 'company1', '11.111.111/0001-11', 'fantasy1');
--- insert into db_sb.person(type, company_name, cnpj, fantasy_name) values('C', 'company2', '11.111.111/0001-12', 'fantasy2');
--- insert into db_sb.person(type, company_name, cnpj, fantasy_name) values('C', 'company3', '11.111.111/0001-13', 'fantasy3');
---
--- insert into db_sb.account(name, parent, parent_id, person_id, status) values ('account1', 1, null, 1, 'ACTIVE');
--- insert into db_sb.account(name, parent, parent_id, person_id, status) values ('account2', 0, 1, 2, 'ACTIVE');
--- insert into db_sb.account(name, parent, parent_id, person_id, status) values ('account3', 0, 2, 3, 'ACTIVE');
+insert into db_sb.person(type, name, cpf, birth_date) values('I', 'user1', '111.111.111-11', '2000-01-01');
+insert into db_sb.person(type, name, cpf, birth_date) values('I', 'user2', '111.111.111-12', '2000-01-01');
+insert into db_sb.person(type, name, cpf, birth_date) values('I', 'user3', '111.111.111-13', '2000-01-01');
+
+insert into db_sb.person(type, company_name, cnpj, fantasy_name) values('C', 'company1', '11.111.111/0001-11', 'fantasy1');
+insert into db_sb.person(type, company_name, cnpj, fantasy_name) values('C', 'company2', '11.111.111/0001-12', 'fantasy2');
+insert into db_sb.person(type, company_name, cnpj, fantasy_name) values('C', 'company3', '11.111.111/0001-13', 'fantasy3');
+
+insert into db_sb.account(name, parent, parent_id, person_id, status) values ('account1', 1, null, 1, 'ACTIVE');
+insert into db_sb.account(name, parent, parent_id, person_id, status) values ('account2', 0, 1, 2, 'ACTIVE');
+insert into db_sb.account(name, parent, parent_id, person_id, status) values ('account3', 0, 2, 3, 'ACTIVE');
 
 

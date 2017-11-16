@@ -88,4 +88,17 @@ public class AccountTransaction {
     public void setAccountTransactionType(AccountTransactionType accountTransactionType) {
         this.accountTransactionType = accountTransactionType;
     }
+
+    @Override
+    public String toString() {
+        return "AccountTransaction{" +
+                "id=" + id +
+                ", code='" + code + '\'' +
+                ", transactionDate=" + transactionDate +
+                ", fromAccount=" + fromAccount +
+                ", toAccount=" + toAccount +
+                ", amount=" + amount +
+                ", accountTransactionType=" + accountTransactionType +
+                '}';
+    }
 }
