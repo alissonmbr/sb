@@ -37,7 +37,7 @@ class Account extends Component {
     }
 
     createAccount = () => {
-        if (!this.state.parent || !this.state.personId || (this.state.parent === 'true' && !this.state.parentId)) {
+        if (!this.state.parent || !this.state.personId || (this.state.parent === 'false' && !this.state.parentId)) {
             this.setState({
                 snackBarOpen: true,
                 snackMessage: "Todos os campos são obrigatórios!"
